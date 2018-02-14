@@ -3,12 +3,17 @@
     <head>
         <meta charset="utf-8">
         <title>Taroko Gorge Explained</title>
-        <link rel="stylesheet" href="pygments.css" type="text/css" />
+        <link rel="stylesheet" href="style.css" type="text/css" />
     </head>
     <body>
+        <section>
         <h1>Taroko Gorge Explained</h1>
+        <a href="#copyright">next --></a>
+    </section>
+        <section>
         <h2 id="copyright">The copyright</h2>
-        <code>
+        <code class="highlight copyright"><pre>
+        <div class="c1">
 &lt;!--
 
 Nick Montfort<br />
@@ -32,7 +37,12 @@ Copyright (c) 2009-2017 Nick Montfort <nickm@nickm.com><br />
     IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.<br />
     <br />
     --&gt;<br />
+    </div>
+    </pre>
 </code>
+<a href="#stylesheet">next --></a>
+</section>
+<section>
 <h2 id="stylesheet">The stylesheet</h2>
 <code class="highlight">
 <pre><span></span><span class="nt">body</span> <span class="p">{</span>
@@ -53,6 +63,162 @@ Copyright (c) 2009-2017 Nick Montfort <nickm@nickm.com><br />
  <span class="k">text-decoration</span><span class="p">:</span> <span class="kc">none</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></code>
+<a href="#poemcode">next --></a>
+</section>
+<section>
+<h2 id="poemcode">The code</h2>
+<code class="highlight">
+<pre><span></span><span class="c1">// t tracks how many lines have been generated.</span>
+<span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="c1">// The interaction between &#39;n&#39; and &#39;paths&#39; determines how the next line of the poem is</span>
+<span class="c1">// generated. Both start at zero.</span>
+<span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">paths</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
+<span class="c1">// Nouns, I guess?</span>
+<span class="kd">var</span> <span class="nx">above</span> <span class="o">=</span> <span class="s1">&#39;brow,mist,shape,layer,the crag,stone,forest,height&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">below</span> <span class="o">=</span> <span class="s1">&#39;flow,basin,shape,vein,rippling,stone,cove,rock&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+<span class="c1">// Verbs</span>
+<span class="kd">var</span> <span class="nx">trans</span> <span class="o">=</span> <span class="s1">&#39;command,pace,roam,trail,frame,sweep,exercise,range&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">imper</span> <span class="o">=</span> <span class="s1">&#39;track,shade,translate,stamp,progress through,direct,run,enter&#39;</span><span class="p">;</span>
+<span class="nx">imper</span> <span class="o">=</span> <span class="nx">imper</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">intrans</span> <span class="o">=</span> <span class="s1">&#39;linger,dwell,rest,relax,hold,dream,hum&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+<span class="c1">// uhhhhh, this is [&#39;s&#39;, &#39;&#39;] (so either s or a lack of s)</span>
+<span class="kd">var</span> <span class="nx">s</span> <span class="o">=</span> <span class="s1">&#39;s,&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+<span class="c1">// Textures</span>
+<span class="kd">var</span> <span class="nx">texture</span> <span class="o">=</span> <span class="s1">&#39;rough,fine&#39;</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+
+<span class="c1">//Gives you a random whole number less than whatever &#39;max&#39; you give it.</span>
+<span class="kd">function</span> <span class="nx">rand_range</span><span class="p">(</span><span class="nx">max</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="nx">max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="c1">// Chooses a random member of a list.</span>
+<span class="kd">function</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">array</span><span class="p">[</span><span class="nx">rand_range</span><span class="p">(</span><span class="nx">array</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)];</span>
+<span class="p">}</span>
+
+<span class="c1">// uh ok now we get into the weird shit</span>
+<span class="kd">function</span> <span class="nx">path</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// This picks a random number that is either zero or one.</span>
+    <span class="c1">// Basically, flip a coin.</span>
+    <span class="kd">var</span> <span class="nx">p</span> <span class="o">=</span> <span class="nx">rand_range</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="c1">// Start building our line by picking a random word from the above list</span>
+    <span class="kd">var</span> <span class="nx">words</span> <span class="o">=</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">above</span><span class="p">);</span>
+    <span class="c1">// If that word is &quot;forest&quot;, one out of 4 times, replace the word with monkeys and</span>
+    <span class="c1">// a verb</span>
+    <span class="k">if</span> <span class="p">((</span><span class="nx">words</span> <span class="o">==</span> <span class="s1">&#39;forest&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">rand_range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">words</span> <span class="o">=</span> <span class="s1">&#39;monkeys &#39;</span> <span class="o">+</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">trans</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// In JS, the % operator means &#39;remainder after division&#39;.</span>
+        <span class="c1">// So for any number n, n % 2...</span>
+        <span class="c1">//  * is zero if n is even</span>
+        <span class="c1">//  * is one if n is odd.</span>
+        <span class="c1">// Since p is either zero or one, (p + 1) is 1 or 2...</span>
+        <span class="c1">// so if p is 0, (p+1)%2 = 1 % 2 = 1</span>
+        <span class="c1">// and if p is 1, 2 % 2 = 0.</span>
+        <span class="c1">// SO! if p is 0, the below line puts an &#39;s&#39; after the first word</span>
+        <span class="c1">// And if p is 1, this puts an &#39;s&#39; after the second.</span>
+        <span class="nx">words</span> <span class="o">+=</span> <span class="nx">s</span><span class="p">[</span><span class="nx">p</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">trans</span><span class="p">)</span> <span class="o">+</span> <span class="nx">s</span><span class="p">[(</span><span class="nx">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="c1">// Also add a potentially essed below word.</span>
+    <span class="nx">words</span> <span class="o">+=</span> <span class="s1">&#39; the &#39;</span> <span class="o">+</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">below</span><span class="p">)</span> <span class="o">+</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">words</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">site</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Start this line blank.</span>
+    <span class="kd">var</span> <span class="nx">words</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+    <span class="c1">// One out of three times, add a word from above</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">rand_range</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">words</span> <span class="o">+=</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">above</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">//Every other times, add a word from below</span>
+        <span class="nx">words</span> <span class="o">+=</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">below</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">words</span> <span class="o">+=</span> <span class="s1">&#39;s &#39;</span> <span class="o">+</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">intrans</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">words</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">cave</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Adds some adjectives</span>
+    <span class="kd">var</span> <span class="nx">adjs</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;encompassing,&#39;</span> <span class="o">+</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">texture</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;,sinuous,straight,objective,arched,cool,clear,dim,driven&#39;</span><span class="p">).</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">);</span>
+    <span class="c1">// Generate a random number between 1 and 4 to be a target</span>
+    <span class="kd">var</span> <span class="nx">target</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nx">rand_range</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+    <span class="c1">// As long as adjs.length is greater than that target...</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">adjs</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// pick a random adjective to delete.</span>
+        <span class="nx">adjs</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">rand_range</span><span class="p">(</span><span class="nx">adjs</span><span class="p">.</span><span class="nx">length</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="c1">// By this point, our list of adjectives has been pared down to have &#39;target&#39; number</span>
+    <span class="c1">// of adjectives.</span>
+    <span class="c1">// The \u00a0 and \u2014 are Majic JavaScrippte Incantations for a space and an</span>
+    <span class="c1">// em-dash, respectively.</span>
+    <span class="c1">// So this is two spaces, a random imperative, and all the adjectives, connected</span>
+    <span class="c1">// together with spaces.</span>
+    <span class="kd">var</span> <span class="nx">words</span> <span class="o">=</span> <span class="s1">&#39;\u00a0\u00a0&#39;</span> <span class="o">+</span> <span class="nx">choose</span><span class="p">(</span><span class="nx">imper</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; the &#39;</span> <span class="o">+</span> <span class="nx">adjs</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; \u2014&#39;</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">words</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kd">function</span> <span class="nx">do_line</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// This gets the part of the HTML document with the ID &#39;main&#39;</span>
+    <span class="kd">var</span> <span class="nx">main</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">);</span>
+    <span class="c1">// If we&#39;ve got 25 or fewer lines, just go ahead and add them</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">t</span> <span class="o">&lt;=</span> <span class="mi">25</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">t</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// If we&#39;ve got more than 25 lines, remove the topmost line before we add one to the</span>
+        <span class="c1">// bottom</span>
+        <span class="nx">main</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">).</span><span class="nx">firstChild</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// If n is zero, we insert a blank line.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">text</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// Else, if n == 1, set paths to a value between 2 and 4, and use </span>
+    <span class="c1">// path() to generate a line of text.</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">paths</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="nx">rand_range</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+        <span class="nx">text</span> <span class="o">=</span> <span class="nx">path</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="c1">// Else, if n is less than paths, use site()</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">&lt;</span> <span class="nx">paths</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">text</span> <span class="o">=</span> <span class="nx">site</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="c1">// If n is the same as paths, use path()</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">==</span> <span class="nx">paths</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">text</span> <span class="o">=</span> <span class="nx">path</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="c1">// If n is one greater than paths, use a blank line</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">==</span> <span class="nx">paths</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">text</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// If n is two greater than paths, go into the cave.</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">==</span> <span class="nx">paths</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">text</span> <span class="o">=</span> <span class="nx">cave</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="c1">// If n is more than two greater than paths, reset n to zero and use a blank line</span>
+    <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">text</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="p">;</span>
+        <span class="nx">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// Increment n by one</span>
+    <span class="nx">n</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="c1">// Capitalise the first letter</span>
+    <span class="nx">text</span> <span class="o">=</span> <span class="nx">text</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="o">+</span> <span class="nx">text</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">text</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+    <span class="c1">// Add it to the bottom of main.</span>
+    <span class="nx">last</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">);</span>
+    <span class="nx">last</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">createTextNode</span><span class="p">(</span><span class="nx">text</span><span class="p">));</span>
+    <span class="nx">main</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">last</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// This is the main function. It sets a timer that runs the above</span>
+<span class="c1">// do_line function every 1.2 seconds</span>
+<span class="kd">function</span> <span class="nx">poem</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">setInterval</span><span class="p">(</span><span class="nx">do_line</span><span class="p">,</span> <span class="mi">1200</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></code>
+</section>
 </body>
 </html>
